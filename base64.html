@@ -362,7 +362,7 @@
             const encryptedHex = encryptedArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
             showResult(encryptedHex);
         } catch (e) {
-            alert('RSA 加密失败，请检查公钥格式！');
+            alert('RSA 加密失败，请检查公钥格式或检查文本是否超长！');
         }
     }
 
