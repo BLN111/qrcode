@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航页</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2e3a8c, #1a2a62);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+        }
+        .nav-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 40px 60px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .nav-container h1 {
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .nav-buttons a {
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(45deg, #ff4b5c, #ff6e7f);
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        }
+        .nav-buttons a:hover {
+            background: linear-gradient(45deg, #ff6e7f, #ff4b5c);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        .nav-buttons a:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav-container">
+    <h1>导航页</h1>
+    <div class="nav-buttons">
+        <!-- 这里使用JavaScript动态生成按钮 -->
+        <script>
+            // 字典：key是按钮名称，value是相对路径
+            const navLinks = {
+                "二维码工具": "qrcode.html",
+                "编码转换": "base64.html",
+            };
+
+            // 动态生成按钮
+            const navButtonsContainer = document.querySelector('.nav-buttons');
+            for (const [name, path] of Object.entries(navLinks)) {
+                const link = document.createElement('a');
+                link.href = path;
+                link.textContent = name;
+                navButtonsContainer.appendChild(link);
+            }
+        </script>
+    </div>
+</div>
+
+</body>
+</html>
