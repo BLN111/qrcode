@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航页</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .nav-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .nav-container h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .nav-buttons a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .nav-buttons a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav-container">
+    <h1>导航页</h1>
+    <div class="nav-buttons">
+        <!-- 这里使用JavaScript动态生成按钮 -->
+        <script>
+            // 字典：key是按钮名称，value是相对路径
+            const navLinks = {
+                "二维码工具": "qrcode.html",
+                "编码转换": "base64.html",
+            };
+
+            // 动态生成按钮
+            const navButtonsContainer = document.querySelector('.nav-buttons');
+            for (const [name, path] of Object.entries(navLinks)) {
+                const link = document.createElement('a');
+                link.href = path;
+                link.textContent = name;
+                navButtonsContainer.appendChild(link);
+            }
+        </script>
+    </div>
+</div>
+
+</body>
+</html>
