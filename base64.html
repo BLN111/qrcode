@@ -388,7 +388,7 @@
     // 复制到剪贴板
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
-            //showToast();
+            showToast();
         });
     }
 
@@ -398,7 +398,7 @@
         toast.classList.add('show');
         setTimeout(() => {
             toast.classList.remove('show');
-        }, 3000);
+        }, 200);
     }
 
     // 切换折叠面板

@@ -200,7 +200,7 @@
     // 复制功能并显示Toast
     function copyText(text) {
         navigator.clipboard.writeText(text).then(() => {
-            //showToast('复制成功');
+            showToast('结果复制成功');
         }).catch((err) => {
             showToast('复制失败');
             console.error(err);
