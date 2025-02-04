@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编码解码工具</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 450px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: none;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        button {
+            flex: 1;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result-box {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            text-align: left;
+            word-wrap: break-word;
+            margin-bottom: 15px;
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 14px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>编码解码工具</h2>
+    <textarea id="input" placeholder="请输入文本..."></textarea>
+    <div class="button-group">
+        <button onclick="base64Encode()">Base64 编码</button>
+        <button onclick="base64Decode()">Base64 解码</button>
+    </div>
+    <div class="button-group">
+        <button onclick="urlEncode()">URL 编码</button>
+        <button onclick="urlDecode()">URL 解码</button>
+    </div>
+    <div class="result-box">
+        <strong>结果：</strong>
+        <span id="result"></span>
+    </div>
+</div>
+
+<div id="toast" class="toast">复制成功</div>
+
+<script>
+    // 支持中文的Base64编码
+    function base64Encode() {
+        const input = document.getElementById('input').value;
+        const utf8Bytes = new TextEncoder().encode(input); // 将字符串转换为UTF-8字节数组
+        const base64 = btoa(String.fromCharCode(...utf8Bytes)); // 将字节数组转换为Base64
+        showResult(base64);
+    }
+
+    // 支持中文的Base64解码
+    function base64Decode() {
+        const input = document.getElementById('input').value;
+        try {
+            const utf8Bytes = atob(input).split('').map(char => char.charCodeAt(0)); // 将Base64解码为字节数组
+            const decodedText = new TextDecoder().decode(new Uint8Array(utf8Bytes)); // 将字节数组转换为字符串
+            showResult(decodedText);
+        } catch (e) {
+            alert('Base64 解码失败，请输入有效的Base64编码！');
+        }
+    }
+
+    // URL编码
+    function urlEncode() {
+        const input = document.getElementById('input').value;
+        const output = encodeURIComponent(input);
+        showResult(output);
+    }
+
+    // URL解码
+    function urlDecode() {
+        const input = document.getElementById('input').value;
+        try {
+            const output = decodeURIComponent(input);
+            showResult(output);
+        } catch (e) {
+            alert('URL 解码失败，请输入有效的URL编码！');
+        }
+    }
+
+    // 显示结果并复制到剪贴板
+    function showResult(text) {
+        const resultElement = document.getElementById('result');
+        resultElement.textContent = text;
+        copyToClipboard(text);
+    }
+
+    // 复制到剪贴板
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast();
+        });
+    }
+
+    // 显示Toast提示
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
