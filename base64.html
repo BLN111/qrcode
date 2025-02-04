@@ -405,10 +405,22 @@
     }
 
     // 切换折叠面板
+    // 切换折叠面板，确保只有一个面板展开
     function toggleCollapse(id) {
+        const allCollapses = document.querySelectorAll('.collapse-content');
+
+        // 首先折叠所有展开的面板
+        allCollapses.forEach(content => {
+            if (content.id !== id) {
+                content.classList.remove('show');
+            }
+        });
+
+        // 切换当前点击的面板
         const content = document.getElementById(id);
         content.classList.toggle('show');
     }
+
 
     // 将 ArrayBuffer 转换为 Base64 字符串
     function arrayBufferToBase64(buffer) {
