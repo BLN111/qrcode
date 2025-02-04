@@ -160,7 +160,6 @@
                     if (code) {
                         copyText(code.data);
                         resultDiv.innerHTML = `<strong>解析成功：</strong>${code.data}`;
-                        showToast('解析成功，已复制到剪贴板');
                     } else {
                         showError('未检测到二维码', 'uploadResult');
                     }
@@ -201,9 +200,9 @@
     // 复制功能并显示Toast
     function copyText(text) {
         navigator.clipboard.writeText(text).then(() => {
-            showToast('复制成功：' + text);
+            showToast('复制成功');
         }).catch((err) => {
-            alert('复制失败');
+            showToast('复制失败');
             console.error(err);
         });
     }
