@@ -5,30 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>编码解码工具</title>
     <style>
+        /* 基本样式 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* 防止页面内容超出 */
+        }
+
         .container {
             background-color: #ffffff;
             padding: 25px;
-            padding-bottom: 60px; /* 增加底部内边距，防止与按钮重叠 */
+            padding-bottom: 80px; /* 增加底部内边距，防止与按钮重叠 */
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 500px;
+            width: 100%;
+            max-width: 500px; /* 限制最大宽度 */
             text-align: center;
-            position: relative; /* 确保复制按钮相对容器定位 */
+            position: relative;
+            overflow-y: auto; /* 内容超出时显示滚动条 */
+            max-height: calc(100vh - 150px); /* 防止容器撑大屏幕 */
         }
 
         #copyBtn {
-            background-color: #4CAF50; /* 温和的绿色 */
+            background-color: #4CAF50;
             color: white;
-            padding: 6px 12px; /* 调整为更小的内边距 */
+            padding: 6px 12px;
             border: none;
-            border-radius: 8px; /* 圆角效果 */
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px; /* 字体略微减小 */
-            position: absolute; /* 绝对定位按钮 */
-            bottom: 20px; /* 距离容器底部 20px */
-            right: 20px; /* 距离容器右侧 20px */
-            overflow: hidden; /* 防止闪光效果溢出按钮 */
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 14px;
+
         }
 
         #copyBtn::after {
@@ -39,67 +50,32 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
-            animation: shine 2s infinite; /* 无限循环的闪光动画 */
-        }
-
-        #copyBtn:hover {
-            background-color: #45a049; /* 深绿色 */
-            transform: scale(1.05); /* 按钮放大效果 */
-        }
-
-        #copyBtn:active {
-            background-color: #388e3c; /* 更深的绿色 */
-            transform: scale(1); /* 点击时还原大小 */
-        }
-
-        /* 闪光动画 */
-        @keyframes shine {
-            0% {
-                left: -100%;
-            }
-            50% {
-                left: 100%;
-            }
-            100% {
-                left: 100%;
-            }
+            animation: shine 2s infinite;
         }
 
 
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
+
         textarea, input {
             width: 100%;
-            max-width: 100%;  /* 确保输入框不会超过容器的宽度 */
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 14px;
             margin-bottom: 15px;
             resize: none;
-            box-sizing: border-box; /* 确保内边距和边框不影响元素的总宽度 */
+            box-sizing: border-box;
         }
+
         .button-group {
             display: flex;
-            flex-wrap: wrap; /* 确保按钮可以换行，避免超出容器 */
+            flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 15px;
         }
+
         button {
-            flex: 1 1 48%; /* 确保按钮在较小的屏幕上自动缩小，并保证宽度不超过容器的一半 */
+            flex: 1 1 48%;
             padding: 10px;
             background-color: #007bff;
             color: #fff;
@@ -109,9 +85,11 @@
             font-size: 14px;
             transition: background-color 0.3s ease;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         .result-box {
             background-color: #f9f9f9;
             padding: 10px;
@@ -122,14 +100,14 @@
             text-align: left;
             word-wrap: break-word;
             margin-bottom: 15px;
-            max-height: 150px; /* Maximum height for the result box */
-            overflow-y: auto; /* Scrollbar for overflow content */
+            max-height: 150px;
+            overflow-y: auto;
         }
 
         .toast {
             visibility: hidden;
             min-width: 250px;
-            margin-left: -125px;
+            margin-left: -150px;
             background-color: #333;
             color: #fff;
             text-align: center;
@@ -141,21 +119,28 @@
             bottom: 30px;
             font-size: 14px;
         }
+
+
+
         .toast.show {
             visibility: visible;
             animation: fadein 0.5s, fadeout 0.5s 2.5s;
         }
+
         @keyframes fadein {
             from {bottom: 0; opacity: 0;}
             to {bottom: 30px; opacity: 1;}
         }
+
         @keyframes fadeout {
             from {bottom: 30px; opacity: 1;}
             to {bottom: 0; opacity: 0;}
         }
+
         .collapse {
             margin-bottom: 15px;
         }
+
         .collapse-header {
             display: flex;
             justify-content: space-between;
@@ -168,6 +153,7 @@
             font-size: 14px;
             color: #333;
         }
+
         .collapse-content {
             padding: 10px;
             border: 1px solid #ddd;
@@ -175,15 +161,18 @@
             margin-top: 10px;
             display: none;
         }
+
         .collapse-content.show {
             display: block;
         }
+
         h1 {
             text-align: center;
             color: #1a73e8;
             margin-bottom: 30px;
         }
     </style>
+
     <!-- 引入 crypto-js 库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
@@ -249,9 +238,10 @@
 
     <!-- 结果显示 -->
     <div class="result-box">
-        <strong>结果：</strong>
-        <span id="result"></span>
         <button id="copyBtn" onclick="copyToClipboard()">复制结果</button>
+
+        <span id="result"></span>
+
     </div>
 </div>
 
