@@ -29,20 +29,23 @@
         }
         textarea, input {
             width: 100%;
+            max-width: 100%;  /* 确保输入框不会超过容器的宽度 */
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 14px;
             margin-bottom: 15px;
             resize: none;
+            box-sizing: border-box; /* 确保内边距和边框不影响元素的总宽度 */
         }
         .button-group {
             display: flex;
+            flex-wrap: wrap; /* 确保按钮可以换行，避免超出容器 */
             gap: 10px;
             margin-bottom: 15px;
         }
         button {
-            flex: 1;
+            flex: 1 1 48%; /* 确保按钮在较小的屏幕上自动缩小，并保证宽度不超过容器的一半 */
             padding: 10px;
             background-color: #007bff;
             color: #fff;
