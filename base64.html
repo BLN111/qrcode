@@ -19,7 +19,7 @@
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 450px;
+            width: 500px;
             text-align: center;
         }
         h2 {
@@ -27,15 +27,14 @@
             margin-bottom: 20px;
             font-size: 24px;
         }
-        textarea {
+        textarea, input {
             width: 100%;
-            height: 100px;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            resize: none;
             font-size: 14px;
             margin-bottom: 15px;
+            resize: none;
         }
         .button-group {
             display: flex;
@@ -94,13 +93,42 @@
             from {bottom: 30px; opacity: 1;}
             to {bottom: 0; opacity: 0;}
         }
+        .collapse {
+            margin-bottom: 15px;
+        }
+        .collapse-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+        .collapse-content {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        .collapse-content.show {
+            display: block;
+        }
     </style>
+    <!-- 引入 crypto-js 库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
 
 <div class="container">
     <h2>编码解码工具</h2>
     <textarea id="input" placeholder="请输入文本..."></textarea>
+
+    <!-- Base64 和 URL 编码解码 -->
     <div class="button-group">
         <button onclick="base64Encode()">Base64 编码</button>
         <button onclick="base64Decode()">Base64 解码</button>
@@ -109,43 +137,89 @@
         <button onclick="urlEncode()">URL 编码</button>
         <button onclick="urlDecode()">URL 解码</button>
     </div>
+
+    <!-- 哈希功能 -->
+    <div class="button-group">
+        <button onclick="hashMD5()">MD5 哈希</button>
+        <button onclick="hashSHA256()">SHA256 哈希</button>
+    </div>
+
+    <!-- AES 加解密 -->
+    <div class="collapse">
+        <div class="collapse-header" onclick="toggleCollapse('aesCollapse')">
+            <span>AES 加解密</span>
+            <span>▼</span>
+        </div>
+        <div class="collapse-content" id="aesCollapse">
+            <input id="aesKey" placeholder="请输入 AES 密钥（32 字符）">
+            <input id="aesIV" placeholder="请输入 AES IV（16 字符）">
+            <div class="button-group">
+                <button onclick="generateAESKeyAndIV()">生成密钥和IV</button>
+            </div>
+            <div class="button-group">
+                <button onclick="aesEncrypt()">AES 加密</button>
+                <button onclick="aesDecrypt()">AES 解密</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RSA 加解密 -->
+    <div class="collapse">
+        <div class="collapse-header" onclick="toggleCollapse('rsaCollapse')">
+            <span>RSA 加解密</span>
+            <span>▼</span>
+        </div>
+        <div class="collapse-content" id="rsaCollapse">
+            <textarea id="rsaPublicKey" placeholder="请输入 RSA 公钥"></textarea>
+            <textarea id="rsaPrivateKey" placeholder="请输入 RSA 私钥"></textarea>
+            <div class="button-group">
+                <button onclick="generateRSAKeys()">生成 RSA 密钥对</button>
+            </div>
+            <div class="button-group">
+                <button onclick="rsaEncrypt()">RSA 加密</button>
+                <button onclick="rsaDecrypt()">RSA 解密</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 结果显示 -->
     <div class="result-box">
         <strong>结果：</strong>
         <span id="result"></span>
     </div>
 </div>
 
-<div id="toast" class="toast">复制成功</div>
+<div id="toast" class="toast">操作成功，结果已自动复制</div>
 
 <script>
-    // 支持中文的Base64编码
+    // Base64 编码
     function base64Encode() {
         const input = document.getElementById('input').value;
-        const utf8Bytes = new TextEncoder().encode(input); // 将字符串转换为UTF-8字节数组
-        const base64 = btoa(String.fromCharCode(...utf8Bytes)); // 将字节数组转换为Base64
+        const utf8Bytes = new TextEncoder().encode(input);
+        const base64 = btoa(String.fromCharCode(...utf8Bytes));
         showResult(base64);
     }
 
-    // 支持中文的Base64解码
+    // Base64 解码
     function base64Decode() {
         const input = document.getElementById('input').value;
         try {
-            const utf8Bytes = atob(input).split('').map(char => char.charCodeAt(0)); // 将Base64解码为字节数组
-            const decodedText = new TextDecoder().decode(new Uint8Array(utf8Bytes)); // 将字节数组转换为字符串
+            const utf8Bytes = atob(input).split('').map(char => char.charCodeAt(0));
+            const decodedText = new TextDecoder().decode(new Uint8Array(utf8Bytes));
             showResult(decodedText);
         } catch (e) {
             alert('Base64 解码失败，请输入有效的Base64编码！');
         }
     }
 
-    // URL编码
+    // URL 编码
     function urlEncode() {
         const input = document.getElementById('input').value;
         const output = encodeURIComponent(input);
         showResult(output);
     }
 
-    // URL解码
+    // URL 解码
     function urlDecode() {
         const input = document.getElementById('input').value;
         try {
@@ -154,6 +228,154 @@
         } catch (e) {
             alert('URL 解码失败，请输入有效的URL编码！');
         }
+    }
+
+    // MD5 哈希
+    function hashMD5() {
+        const input = document.getElementById('input').value;
+        const hash = CryptoJS.MD5(input).toString();
+        showResult(hash);
+    }
+
+    // SHA256 哈希
+    async function hashSHA256() {
+        const input = document.getElementById('input').value;
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+        showResult(hashHex);
+    }
+
+    // AES 加密
+    function aesEncrypt() {
+        const input = document.getElementById('input').value;
+        const key = document.getElementById('aesKey').value;
+        const iv = document.getElementById('aesIV').value;
+        if (key.length !== 32 || iv.length !== 16) {
+            alert('AES 密钥必须为 32 字符，IV 必须为 16 字符！');
+            return;
+        }
+        const encrypted = CryptoJS.AES.encrypt(input, CryptoJS.enc.Utf8.parse(key), {
+            iv: CryptoJS.enc.Utf8.parse(iv),
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        showResult(encrypted.toString());
+    }
+
+    // AES 解密
+    function aesDecrypt() {
+        const input = document.getElementById('input').value;
+        const key = document.getElementById('aesKey').value;
+        const iv = document.getElementById('aesIV').value;
+        if (key.length !== 32 || iv.length !== 16) {
+            alert('AES 密钥必须为 32 字符，IV 必须为 16 字符！');
+            return;
+        }
+        const decrypted = CryptoJS.AES.decrypt(input, CryptoJS.enc.Utf8.parse(key), {
+            iv: CryptoJS.enc.Utf8.parse(iv),
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        showResult(decrypted.toString(CryptoJS.enc.Utf8));
+    }
+
+    // 生成 AES 密钥和 IV
+    function generateAESKeyAndIV() {
+        const key = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex);
+        const iv = CryptoJS.lib.WordArray.random(8).toString(CryptoJS.enc.Hex);
+        document.getElementById('aesKey').value = key;
+        document.getElementById('aesIV').value = iv;
+    }
+
+    // RSA 加密
+    async function rsaEncrypt() {
+        const input = document.getElementById('input').value;
+        const publicKey = document.getElementById('rsaPublicKey').value;
+        try {
+            const encoded = new TextEncoder().encode(input);
+            const encrypted = await crypto.subtle.encrypt(
+                { name: 'RSA-OAEP' },
+                await importPublicKey(publicKey),
+                encoded
+            );
+            const encryptedArray = Array.from(new Uint8Array(encrypted));
+            const encryptedHex = encryptedArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+            showResult(encryptedHex);
+        } catch (e) {
+            alert('RSA 加密失败，请检查公钥格式！');
+        }
+    }
+
+    // RSA 解密
+    async function rsaDecrypt() {
+        const input = document.getElementById('input').value;
+        const privateKey = document.getElementById('rsaPrivateKey').value;
+        try {
+            const encryptedArray = input.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
+            const encrypted = new Uint8Array(encryptedArray);
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'RSA-OAEP' },
+                await importPrivateKey(privateKey),
+                encrypted
+            );
+            const decoded = new TextDecoder().decode(decrypted);
+            showResult(decoded);
+        } catch (e) {
+            alert('RSA 解密失败，请检查私钥格式！');
+        }
+    }
+
+    // 生成 RSA 密钥对
+    async function generateRSAKeys() {
+        const keyPair = await crypto.subtle.generateKey(
+            {
+                name: "RSA-OAEP",
+                modulusLength: 2048,
+                publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+                hash: { name: "SHA-256" },
+            },
+            true,
+            ["encrypt", "decrypt"]
+        );
+
+        const publicKey = await crypto.subtle.exportKey("spki", keyPair.publicKey);
+        const privateKey = await crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+
+        document.getElementById('rsaPublicKey').value = arrayBufferToBase64(publicKey);
+        document.getElementById('rsaPrivateKey').value = arrayBufferToBase64(privateKey);
+    }
+
+    // 导入 RSA 公钥
+    async function importPublicKey(pem) {
+        const pemHeader = '-----BEGIN PUBLIC KEY-----';
+        const pemFooter = '-----END PUBLIC KEY-----';
+        const pemContents = pem.replace(pemHeader, '').replace(pemFooter, '').replace(/\s/g, '');
+        const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+        return await crypto.subtle.importKey(
+            'spki',
+            binaryDer,
+            { name: 'RSA-OAEP', hash: 'SHA-256' },
+            true,
+            ['encrypt']
+        );
+    }
+
+    // 导入 RSA 私钥
+    async function importPrivateKey(pem) {
+        const pemHeader = '-----BEGIN PRIVATE KEY-----';
+        const pemFooter = '-----END PRIVATE KEY-----';
+        const pemContents = pem.replace(pemHeader, '').replace(pemFooter, '').replace(/\s/g, '');
+        const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+        return await crypto.subtle.importKey(
+            'pkcs8',
+            binaryDer,
+            { name: 'RSA-OAEP', hash: 'SHA-256' },
+            true,
+            ['decrypt']
+        );
     }
 
     // 显示结果并复制到剪贴板
@@ -166,7 +388,7 @@
     // 复制到剪贴板
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
-            showToast();
+            //showToast();
         });
     }
 
@@ -177,6 +399,22 @@
         setTimeout(() => {
             toast.classList.remove('show');
         }, 3000);
+    }
+
+    // 切换折叠面板
+    function toggleCollapse(id) {
+        const content = document.getElementById(id);
+        content.classList.toggle('show');
+    }
+
+    // 将 ArrayBuffer 转换为 Base64 字符串
+    function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
     }
 </script>
 
