@@ -5,200 +5,145 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🧰🔧🔨🔩</title>
     <style>
-        /* 基本样式 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            background-color: #fff; /* 保持白色背景 */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            color: #333;
+            position: relative;
             overflow: hidden;
         }
-
-        .container {
-            background-color: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
+        .nav-container {
+            background-color: rgba(255, 255, 255, 0.9); /* 半透明白色背景 */
+            padding: 40px 60px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             text-align: center;
+            z-index: 10; /* 确保容器位于最上层 */
         }
-
-        h1 {
-            color: #1a73e8;
+        .nav-container h1 {
             margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
-
-        .question-box {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 18px;
-        }
-
-        .button-group {
+        .nav-buttons {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 20px;
         }
-
         button {
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
+            background: #1a73e8; /* 蓝色背景 */
+            color: white;
             border: none;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+            font-weight: bold;
+            font-size: 18px; /* 调整字体大小 */
+            transition: 0.2s;
+            width: 100%;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background: #1557b0; /* 悬停时变成深蓝色 */
         }
 
-        .toast {
-            visibility: hidden;
-            min-width: 250px;
-            margin-left: -125px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1;
-            left: 50%;
-            bottom: 30px;
-            font-size: 14px;
+        /* 烟花粒子样式 */
+        .particle {
+            position: absolute;
+            width: 8px; /* 减小粒子尺寸 */
+            height: 8px; /* 减小粒子尺寸 */
+            background-color: #1a73e8;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.8;
+            animation: particleAnim 1s ease-out forwards;
         }
-
-        .toast.show {
-            visibility: visible;
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        }
-
-        @keyframes fadein {
-            from {bottom: 0; opacity: 0;}
-            to {bottom: 30px; opacity: 1;}
-        }
-
-        @keyframes fadeout {
-            from {bottom: 30px; opacity: 1;}
-            to {bottom: 0; opacity: 0;}
+        @keyframes particleAnim {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) scale(0);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>选择题</h1>
-    <div class="question-box" id="questionBox"></div>
+<div class="nav-container">
+    <h1>🧰🔧🔨🔩</h1>
+    <div class="nav-buttons">
+        <!-- 这里使用JavaScript动态生成按钮 -->
+        <script>
+            // 字典：key是按钮名称，value是相对路径
+            const navLinks = {
+                "🔍 二维码全能工具": "qrcode.html",
+                "🔐 编码解码工具": "base64.html",
+            };
 
-    <div class="button-group" id="options"></div>
+            // 动态生成按钮
+            const navButtonsContainer = document.querySelector('.nav-buttons');
+            for (const [name, path] of Object.entries(navLinks)) {
+                const button = document.createElement('button');
+                button.textContent = name;
+                button.onclick = function() {
+                    window.location.href = path;
+                };
+                navButtonsContainer.appendChild(button);
+            }
 
-    <div id="toast" class="toast">答案已提交</div>
+            // 全屏随机烟花粒子特效
+            function createRandomFireworks() {
+                const particlesCount = Math.floor(Math.random() * (200 - 20 + 1)) + 20; // 减少粒子数量范围 20~200
 
-    <div class="footer" style="text-align: center; font-size: 14px; padding: 15px; border-radius: 8px; margin-top: 20px; box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);">
-        <div id="user-info"></div>
-        <div>
-            This tool is for internal use only and is prohibited from use without authorization.
-        </div>
+                // 随机选择一个圆心位置
+                const centerX = Math.random() * window.innerWidth;
+                const centerY = Math.random() * window.innerHeight;
+
+                // 为了模拟烟花的效果，我们将在圆形区域内生成粒子
+                for (let i = 0; i < particlesCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    document.body.appendChild(particle);  <!-- 粒子生成在body中 -->
+
+                    // 随机角度和距离，模拟喷射成圆形
+                    const angle = Math.random() * 2 * Math.PI;  // 0到2PI之间的随机角度
+                    const distance = Math.random() * 80 + 40; // 控制粒子的飞行距离，减少最大值
+
+                    // 根据角度和距离计算粒子位置
+                    const deltaX = Math.cos(angle) * distance;
+                    const deltaY = Math.sin(angle) * distance;
+
+                    // 设置粒子初始位置
+                    particle.style.left = `${centerX}px`;
+                    particle.style.top = `${centerY}px`;
+
+                    // 设置粒子的喷射方向
+                    particle.style.setProperty('--x', `${deltaX}px`);
+                    particle.style.setProperty('--y', `${deltaY}px`);
+
+                    // 删除粒子元素
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 800); // 减少粒子的持续时间
+                }
+            }
+
+            // 降低创建烟花的频率
+            setInterval(createRandomFireworks, 1500); // 每 1500ms 创建一次烟花
+
+        </script>
     </div>
-
 </div>
-<script>
-    function getUserInfo() {
-        fetch('https://ipinfo.io/json')
-            .then(response => response.json())
-            .then(data => {
-                const ipAddress = data.ip;
-                const location = `${data.city}, ${data.region}, ${data.country}`;
-                const organization = data.org;
-                const timezone = data.timezone;
-                const browserInfo = navigator.userAgent;
-                const osInfo = navigator.platform;
-
-                const userInfo = `
-                    <p><strong>IP Address:</strong> ${ipAddress}</p>
-                    <p><strong>Location:</strong> ${location}</p>
-                    <p><strong>Organization:</strong> ${organization}</p>
-                    <p><strong>Timezone:</strong> ${timezone}</p>
-                    <p><strong>Browser:</strong> ${browserInfo}</p>
-                    <p><strong>Operating System:</strong> ${osInfo}</p>
-                `;
-
-                document.getElementById('user-info').innerHTML = userInfo;
-            })
-            .catch(error => {
-                console.error('Error fetching IP info:', error);
-                document.getElementById('user-info').innerHTML = 'Failed to retrieve IP information.';
-            });
-    }
-
-    getUserInfo();
-</script>
-<script>
-    // 配置字典
-    const questionConfig = {
-        question: "以下哪个是工具箱？",
-        options: {
-            A: "🧰",
-            B: "🔧",
-            C: "🔨",
-            D: "🔩"
-        },
-        correctAnswer: "A",
-        pageA: "index2.html",  // A页面地址
-        pageB: "404.html"   // B页面地址
-    };
-
-    // 渲染题目和选项
-    function renderQuestion() {
-        const questionBox = document.getElementById('questionBox');
-        const optionsDiv = document.getElementById('options');
-
-        questionBox.innerHTML = questionConfig.question;
-
-        Object.keys(questionConfig.options).forEach(option => {
-            const button = document.createElement('button');
-            button.textContent = `${option}: ${questionConfig.options[option]}`;
-            button.onclick = () => checkAnswer(option);
-            optionsDiv.appendChild(button);
-        });
-    }
-
-    // 检查答案
-    function checkAnswer(selectedOption) {
-        const correctAnswer = questionConfig.correctAnswer;
-        const resultPage = selectedOption === correctAnswer ? questionConfig.pageA : questionConfig.pageB;
-
-        // 显示提示
-        showToast();
-
-        // 跳转到对应页面
-        setTimeout(() => {
-            window.location.href = resultPage;
-        }, 1000);
-    }
-
-    // 显示Toast提示
-    function showToast() {
-        const toast = document.getElementById('toast');
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 1000);
-    }
-
-    // 初始化渲染
-    renderQuestion();
-</script>
 
 </body>
 </html>
